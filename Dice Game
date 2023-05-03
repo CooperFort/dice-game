@@ -1,0 +1,107 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <cstdlib>
+#include <ctime>
+
+using namespace std;
+
+// Function to generate a random number between min and max
+int random(int min, int max) 
+{
+    return rand() % (max - min + 1) + min;
+}
+
+// Function to play the game with n players
+void play_game(int n, vector<string>& last_players, vector<int>& last_scores) 
+{
+    const int winning_score = 10;
+    vector<string> players(n);
+    vector<int> scores(n, 0);
+    srand(time(nullptr));  // Seed the random number generator with the current time
+
+    // Get the names of the players
+    for (int i = 0; i < n; i++) 
+    {
+        cout << "Enter name for player " << i+1 << ": ";
+        cin >> players[i];
+    }
+
+    // Play the game
+    int winner = -1;
+    bool found_winner = false;
+    while (!found_winner) 
+    {
+        for (int i = 0; i < n; i++) 
+        {
+            int roll = random(1, 6);
+            scores[i] += roll;
+            cout << players[i] << " rolled a " << roll << ", current score: " << scores[i] << endl;
+            if (scores[i] >= winning_score) 
+            {
+                winner = i;
+                found_winner = true;
+            }
+        }
+    }
+
+    // Display the winner's name and score
+    cout << players[winner] << " wins with a score of " << scores[winner] << "!" << endl;
+
+    // Store the scores for later viewing
+    last_scores = scores;
+    last_players = players;
+}
+
+// Function to view the scores of the most recent game
+void view_scores(const vector<string>& last_players, const vector<int>& last_scores) 
+{
+    if (last_scores.empty()) 
+    {
+        cout << "No games played yet!" << endl;
+        return;
+    }
+    cout << "Scores for the last game:" << endl;
+    for (int i = 0; i < last_scores.size(); i++) 
+    {
+        cout << last_players[i] << ": " << last_scores[i] << endl;
+    }
+}
+
+int main() 
+{
+    int choice;
+    vector<string> last_players;
+    vector<int> last_scores;
+    do 
+    {
+        cout << "Menu:" << endl;
+        cout << "1. Play Game" << endl;
+        cout << "2. View Scores" << endl;
+        cout << "3. Exit" << endl;
+        cout << "Enter your choice: ";
+        cin >> choice;
+        switch (choice) 
+        {
+            case 1:
+                int n;
+                do 
+                {
+                    cout << "Enter number of players (2-4): ";
+                    cin >> n;
+                } while (n < 2 || n > 4);
+                play_game(n, last_players, last_scores);
+                break;
+            case 2:
+                view_scores(last_players, last_scores);
+                break;
+            case 3:
+                cout << "Game ended!" << endl;
+                break;
+            default:
+                cout << "Invalid choice, try again." << endl;
+        }
+    } while (choice != 3);
+
+    return 0;
+}
